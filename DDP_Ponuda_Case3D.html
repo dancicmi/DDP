@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case3D — Dobračina Plaza · Informativna Ponuda 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #b8962e;
+  --gold-light: #d4b050;
+  --gold-pale: #f5f0e4;
+  --gold-dark: #8a6e1f;
+  --black: #0f0f0f;
+  --dark: #242424;
+  --light: #aaa;
+  --border: rgba(184,150,46,0.2);
+  --border-light: rgba(255,255,255,0.08);
+  --bg: #0f0f0f;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --white: #f5f2ec;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.6; min-height: 100vh; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+/* LOCK SCREEN */
+#lock-screen {
+  position: fixed; inset: 0; background: #0f0f0f; z-index: 9999;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+#lock-screen .lock-logo { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 4px; color: var(--white); margin-bottom: 3rem; }
+#lock-screen .lock-logo span { color: var(--gold); }
+#lock-screen .lock-box { width: 100%; max-width: 360px; padding: 0 2rem; text-align: center; }
+#lock-screen .lock-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--white); margin-bottom: 6px; line-height: 1.2; }
+#lock-screen .lock-sub { font-size: 12px; letter-spacing: 1.5px; color: #666; margin-bottom: 2rem; }
+#lock-screen .lock-input-wrap { position: relative; margin-bottom: 1rem; }
+#lock-screen input[type=password] { width: 100%; background: #161616; border: 0.5px solid rgba(184,150,46,0.3); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; letter-spacing: 3px; padding: 14px 48px 14px 18px; outline: none; border-radius: 2px; transition: border-color 0.2s; }
+#lock-screen input[type=password]:focus { border-color: var(--gold); }
+#lock-screen input[type=password]::placeholder { letter-spacing: 1px; color: #444; font-size: 12px; }
+#lock-screen .toggle-pw { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #555; font-size: 13px; padding: 0; font-family: 'DM Sans', sans-serif; }
+#lock-screen .toggle-pw:hover { color: var(--gold); }
+#lock-screen .lock-btn { width: 100%; padding: 14px; background: var(--gold); border: none; color: #0f0f0f; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 2px; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
+#lock-screen .lock-btn:hover { background: var(--gold-light); }
+#lock-screen .lock-error { font-size: 12px; color: #c0392b; margin-top: 10px; min-height: 18px; }
+#lock-screen .lock-footer { margin-top: 3rem; font-size: 10px; letter-spacing: 1.5px; color: #333; }
+#main-content { display: none; }
+
+/* HERO */
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 3rem; border-bottom: 0.5px solid var(--border); position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(184,150,46,0.06) 0%, transparent 70%); pointer-events: none; }
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.logo { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 4px; color: var(--white); }
+.logo span { color: var(--gold); }
+.hero-meta { text-align: right; font-size: 11px; letter-spacing: 1.5px; color: var(--light); line-height: 1.8; }
+.hero-center { flex: 1; display: flex; align-items: center; padding: 4rem 0; }
+.hero-headline { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 8vw, 96px); font-weight: 300; line-height: 1.0; letter-spacing: -1px; color: var(--white); }
+.hero-headline em { font-style: italic; color: var(--gold); }
+.hero-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; }
+.hero-stats { display: flex; gap: 3rem; }
+.hero-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--gold); line-height: 1; }
+.hero-stat-lbl { font-size: 11px; letter-spacing: 1.5px; color: var(--light); margin-top: 4px; }
+.scroll-hint { font-size: 11px; letter-spacing: 2px; color: var(--light); display: flex; align-items: center; gap: 8px; }
+.scroll-hint::before { content: ''; display: block; width: 24px; height: 0.5px; background: var(--gold); }
+
+/* NAV */
+.sticky-nav { position: sticky; top: 0; z-index: 100; background: rgba(15,15,15,0.95); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--border); padding: 0 3rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-logo { font-size: 11px; font-weight: 500; letter-spacing: 3px; color: var(--gold); }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { font-size: 11px; letter-spacing: 1.5px; color: var(--light); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--gold); }
+.nav-total { font-size: 12px; color: var(--white); font-weight: 500; }
+
+/* SECTIONS */
+.full-section { padding: 6rem 3rem; border-bottom: 0.5px solid var(--border); }
+.full-inner { max-width: 1100px; margin: 0 auto; }
+.section-label { font-size: 10px; letter-spacing: 3px; color: var(--gold); margin-bottom: 1.5rem; font-weight: 500; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 300; line-height: 1.1; margin-bottom: 1rem; }
+.section-title em { font-style: italic; color: var(--gold); }
+.section-desc { font-size: 14px; color: var(--light); max-width: 560px; line-height: 1.8; margin-bottom: 3rem; }
+
+/* PHASE TABS */
+.phase-tabs { display: flex; gap: 0; margin-bottom: 2.5rem; border: 0.5px solid var(--border); border-radius: 2px; overflow: hidden; }
+.phase-tab { flex: 1; padding: 1rem 1.5rem; background: transparent; border: none; border-right: 0.5px solid var(--border); cursor: pointer; transition: all 0.2s; text-align: left; }
+.phase-tab:last-child { border-right: none; }
+.phase-tab .tab-num { font-size: 10px; letter-spacing: 2px; color: var(--light); margin-bottom: 4px; }
+.phase-tab .tab-name { font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+.phase-tab .tab-price { font-size: 11px; color: var(--gold); }
+.phase-tab.active { background: var(--surface); border-bottom: 2px solid var(--gold); }
+.phase-tab:hover:not(.active) { background: var(--surface2); }
+.phase-panel { display: none; }
+.phase-panel.active { display: block; }
+
+/* PANEL GRID */
+.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 0.5px solid var(--border); margin-bottom: 2rem; }
+.panel-cell { background: var(--bg); padding: 1.5rem; }
+.panel-cell-label { font-size: 10px; letter-spacing: 2px; color: var(--gold); margin-bottom: 0.75rem; font-weight: 500; }
+
+/* ITEMS */
+.item-list { list-style: none; }
+.item-list li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border-light); font-size: 13px; color: var(--white); line-height: 1.5; }
+.item-list li:last-child { border-bottom: none; }
+.item-list li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 7px; }
+.item-list .item-sub { display: block; font-size: 11px; color: var(--light); margin-top: 2px; }
+
+/* TIMELINE */
+.timeline { margin-bottom: 2rem; }
+.tl-item { display: flex; gap: 1.5rem; padding: 1rem 0; border-bottom: 0.5px solid var(--border-light); align-items: flex-start; }
+.tl-item:last-child { border-bottom: none; }
+.tl-badge { font-size: 10px; letter-spacing: 1px; padding: 4px 10px; border: 0.5px solid var(--gold-dark); color: var(--gold); white-space: nowrap; flex-shrink: 0; font-weight: 500; }
+.tl-content { font-size: 13px; color: var(--white); line-height: 1.5; }
+.tl-content span { display: block; font-size: 11px; color: var(--light); margin-top: 3px; }
+
+/* PRICE BOX */
+.price-box { background: var(--surface); border: 0.5px solid var(--border); padding: 2rem; margin-bottom: 1rem; }
+.price-box-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 0.5px solid var(--border); }
+.price-main { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--gold); line-height: 1; }
+.price-note { font-size: 11px; color: var(--light); margin-top: 4px; }
+.price-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border-light); font-size: 13px; }
+.price-row:last-child { border-bottom: none; }
+.price-row-lbl { color: var(--light); }
+.price-row-val { color: var(--white); font-weight: 500; }
+.price-row-val.gold { color: var(--gold); }
+.price-row-val.inc { font-size: 11px; color: #4caf8a; font-weight: 400; }
+
+/* PRICING MODEL TABLE */
+.pricing-model { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+.pricing-model th { font-size: 10px; letter-spacing: 2px; color: var(--gold); font-weight: 500; text-align: left; padding: 0 0 1rem 0; border-bottom: 0.5px solid var(--border); }
+.pricing-model td { padding: 0.875rem 0; font-size: 13px; border-bottom: 0.5px solid var(--border-light); vertical-align: top; }
+.pricing-model tr:last-child td { border-bottom: none; }
+.pricing-model .cat { color: var(--gold); font-weight: 500; font-size: 11px; letter-spacing: 1px; white-space: nowrap; padding-right: 1.5rem; }
+.pricing-model .name { color: var(--white); }
+.pricing-model .price-col { color: var(--white); text-align: right; white-space: nowrap; font-weight: 500; }
+
+/* ADMIN TABLE */
+.admin-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+.admin-table th { font-size: 10px; letter-spacing: 2px; color: var(--gold); font-weight: 500; text-align: left; padding: 0 0 1rem 0; border-bottom: 0.5px solid var(--border); }
+.admin-table td { padding: 0.75rem 0; font-size: 13px; border-bottom: 0.5px solid var(--border-light); vertical-align: top; }
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table .feature { color: var(--white); }
+.admin-table .self { color: #4caf8a; font-size: 12px; text-align: center; }
+.admin-table .case3d { color: var(--gold); font-size: 12px; text-align: center; }
+.admin-table .both { color: #aaa; font-size: 12px; text-align: center; }
+
+/* SLA */
+.sla-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; background: var(--border); border: 0.5px solid var(--border); margin-bottom: 2rem; }
+.sla-cell { background: var(--bg); padding: 1.5rem; }
+.sla-val { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 4px; }
+.sla-lbl { font-size: 11px; letter-spacing: 1px; color: var(--light); }
+.sla-desc { font-size: 12px; color: var(--white); margin-top: 8px; line-height: 1.5; }
+
+/* OBJECTIONS */
+.objections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 0.5px solid var(--border); margin-bottom: 2rem; }
+.obj-card { background: var(--bg); padding: 1.5rem; cursor: pointer; transition: background 0.2s; }
+.obj-card:hover { background: var(--surface); }
+.obj-card.open { background: var(--surface); }
+.obj-q { font-size: 13px; font-weight: 500; color: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.obj-q .arrow { font-size: 16px; color: var(--gold); flex-shrink: 0; transition: transform 0.2s; }
+.obj-card.open .arrow { transform: rotate(45deg); }
+.obj-a { display: none; font-size: 13px; color: var(--light); line-height: 1.7; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); }
+.obj-card.open .obj-a { display: block; }
+.obj-highlight { display: inline-block; background: rgba(184,150,46,0.12); color: var(--gold); padding: 2px 8px; font-size: 12px; font-weight: 500; margin-top: 8px; }
+
+/* SUMMARY */
+.summary-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+.summary-table th { font-size: 10px; letter-spacing: 2px; color: var(--gold); font-weight: 500; text-align: left; padding: 0 0 1rem 0; border-bottom: 0.5px solid var(--border); }
+.summary-table td { padding: 1rem 0; font-size: 13px; border-bottom: 0.5px solid var(--border-light); vertical-align: top; }
+.summary-table tr:last-child td { border-bottom: none; }
+.summary-table .faza { color: var(--gold); font-weight: 500; font-size: 11px; letter-spacing: 1px; }
+.grand-total { display: flex; justify-content: space-between; align-items: center; padding: 2rem; border: 0.5px solid var(--gold-dark); margin-bottom: 3rem; }
+.gt-lbl { font-size: 11px; letter-spacing: 2px; color: var(--light); }
+.gt-val { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--gold); line-height: 1; }
+.gt-sub { font-size: 12px; color: var(--light); margin-top: 4px; text-align: right; }
+
+/* CONTACT */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 0.5px solid var(--border); }
+.contact-cell { background: var(--bg); padding: 2rem; }
+.contact-lbl { font-size: 10px; letter-spacing: 2px; color: var(--gold); margin-bottom: 0.5rem; font-weight: 500; }
+.contact-val { font-size: 14px; color: var(--white); }
+.contact-val a { color: var(--gold); text-decoration: none; }
+
+/* NAPOMENA */
+.napomena { background: var(--surface); border-left: 2px solid var(--gold); padding: 1.25rem 1.5rem; font-size: 13px; color: var(--light); line-height: 1.7; margin-top: 1.5rem; }
+.napomena strong { color: var(--white); font-weight: 500; }
+
+.disclaimer { margin-top: 4rem; padding: 2rem 3rem; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--light); line-height: 1.8; text-align: center; max-width: 1100px; margin-left: auto; margin-right: auto; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.hero-headline { animation: fadeUp 0.8s ease both; }
+.hero-stats { animation: fadeUp 0.8s 0.2s ease both; }
+
+@media (max-width: 768px) {
+  .hero, .full-section { padding: 2rem 1.5rem; }
+  .sticky-nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .panel-grid, .objections-grid, .contact-grid, .sla-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+  .phase-tabs { flex-direction: column; }
+  .phase-tab { border-right: none; border-bottom: 0.5px solid var(--border); }
+  .gt-val { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lock-screen">
+  <div class="lock-logo">CAS<span>E</span>3D</div>
+  <div class="lock-box">
+    <div class="lock-title">Poverljiv dokument</div>
+    <div class="lock-sub">UNESITE ŠIFRU ZA PRISTUP</div>
+    <div class="lock-input-wrap">
+      <input type="password" id="pw-input" placeholder="Šifra za pristup" autocomplete="off" onkeydown="if(event.key==='Enter')unlock()">
+      <button class="toggle-pw" onclick="togglePw()" id="toggle-btn">PRIKAŽI</button>
+    </div>
+    <button class="lock-btn" onclick="unlock()">OTKLJUČAJ DOKUMENT</button>
+    <div class="lock-error" id="lock-error"></div>
+  </div>
+  <div class="lock-footer">© 2026 CASE3D · NOVI SAD · POVERLJIVO</div>
+</div>
+
+<div id="main-content">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="logo">CAS<span>E</span>3D</div>
+    <div class="hero-meta">INFORMATIVNA PONUDA<br>DOBRAČINA PLAZA · 2026<br>POVERLJIVO</div>
+  </div>
+  <div class="hero-center">
+    <div>
+      <div class="hero-headline">
+        Digitalni ekosistem<br>za prodaju<br><em>Dobračina Plaza.</em>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bottom">
+    <div class="hero-stats">
+      <div><div class="hero-stat-val">3</div><div class="hero-stat-lbl">ULAZA / LAMELE</div></div>
+      <div><div class="hero-stat-val">88%</div><div class="hero-stat-lbl">AGENATA KORISTI NEDELJNO</div></div>
+      <div><div class="hero-stat-val">70%</div><div class="hero-stat-lbl">VIŠA STOPA USPEHA</div></div>
+      <div><div class="hero-stat-val">40%</div><div class="hero-stat-lbl">RAST PRIHODA OD PROVIZIJE</div></div>
+    </div>
+    <div class="scroll-hint">SCROLL ZA DETALJE</div>
+  </div>
+</div>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <div class="nav-logo">CASE3D</div>
+  <div class="nav-links">
+    <a href="#uvod">O nama</a>
+    <a href="#faze">Faze</a>
+    <a href="#pricing-model">Pricing model</a>
+    <a href="#administracija">Administracija</a>
+    <a href="#sla">SLA</a>
+    <a href="#rekapitulacija">Rekapitulacija</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+  <div class="nav-total">od €136,690</div>
+</nav>
+
+<!-- UVOD -->
+<div class="full-section" id="uvod">
+  <div class="full-inner">
+    <div class="section-label">O KOMPANIJI</div>
+    <div class="section-title">Jedinstveno iskustvo<br>kupovine i prodaje<br><em>nekretnina.</em></div>
+    <div class="section-desc">Case3D razvija vizualizacione i interaktivne platforme koje personalizuju prodaju nekretnina, emocionalno angažuju kupce i isporučuju iskustva koja prodaju. Sa 21 godinom iskustva i 200+ zadovoljnih klijenata širom sveta.</div>
+
+    <div class="panel-grid">
+      <div class="panel-cell">
+        <div class="panel-cell-label">MISIJA</div>
+        <p style="font-size:14px;color:#ccc;line-height:1.8;">Razvijamo prezentacije nekretnina do granica mogućeg. Kao tim arhitektonskih dizajnera i tehnologa, na jedinstven način prevodimo vašu viziju projekta u vizuale koji transportuju kupce i investitore.</p>
+      </div>
+      <div class="panel-cell">
+        <div class="panel-cell-label">REFERENCE</div>
+        <ul class="item-list">
+          <li><a href="https://www.belgradewaterfront.com" target="_blank" style="color:var(--gold-light);text-decoration:none;">Belgrade Waterfront — Complete Sales Experience</a><span class="item-sub">Beograd · Flagship projekat</span></li>
+          <li><a href="https://www.theellinikon.com" target="_blank" style="color:var(--gold-light);text-decoration:none;">The Ellinikon — Complete Sales Experience</a><span class="item-sub">Atina · Najveći urbani razvojni projekat u Evropi</span></li>
+          <li><a href="https://lusticabay.com" target="_blank" style="color:var(--gold-light);text-decoration:none;">Lustica Bay — Complete Sales Experience</a><span class="item-sub">Crna Gora · Luksuzni resort razvoj</span></li>
+          <li>Unreal Engine Authorized Service Partner<span class="item-sub">Jedini u regionu</span></li>
+          <li>200+ realizovanih projekata<span class="item-sub">Europa, MENA, Azija</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem;">
+      <div class="panel-cell-label" style="margin-bottom:1.25rem;">TRUSTED BY</div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--border);border:0.5px solid var(--border);">
+        <a href="https://www.portomontenegro.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#888">M</text><text x="50%" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="#666" letter-spacing="1">PORTO MONTENEGRO</text></svg></a>
+        <a href="https://www.lamdadevelopments.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#888" letter-spacing="2">LAMDA</text><text x="50%" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="#666" letter-spacing="1">DEVELOPMENT</text></svg></a>
+        <a href="https://www.eaglehills.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#888" letter-spacing="2">EAGLE</text><text x="50%" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="#666" letter-spacing="1">HILLS</text></svg></a>
+        <a href="https://www.belgradewaterfront.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="40" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="700" fill="#888" letter-spacing="3">BW</text></svg></a>
+        <a href="https://www.orascomdh.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#888" letter-spacing="1">ORASCOM</text><text x="50%" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="#666" letter-spacing="1">DEVELOPMENT</text></svg></a>
+        <a href="https://lusticabay.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#888" letter-spacing="1">LUŠTICA BAY</text><text x="50%" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="#666" letter-spacing="1">MONTENEGRO</text></svg></a>
+        <a href="https://www.emaar.com" target="_blank" style="background:var(--bg);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--bg)'"><svg width="72" height="42" viewBox="0 0 120 60"><text x="50%" y="40" text-anchor="middle" font-family="Georgia,serif" font-size="22" fill="#888" letter-spacing="3">EMAAR</text></svg></a>
+        <div style="background:var(--bg);padding:1.5rem 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+          <svg viewBox="0 0 360 180" width="160" height="80" xmlns="http://www.w3.org/2000/svg" style="opacity:0.55;">
+            <!-- World map simplified outline paths -->
+            <!-- North America -->
+            <path d="M 45 40 L 52 35 L 65 32 L 78 28 L 85 32 L 88 38 L 90 45 L 85 52 L 80 58 L 75 65 L 70 72 L 65 75 L 58 72 L 52 68 L 48 62 L 44 55 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Greenland -->
+            <path d="M 88 18 L 98 15 L 108 18 L 112 25 L 108 32 L 98 35 L 88 32 L 84 25 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- South America -->
+            <path d="M 78 82 L 85 78 L 92 80 L 96 88 L 98 98 L 95 110 L 88 120 L 80 125 L 74 120 L 70 110 L 68 98 L 70 88 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Europe -->
+            <path d="M 155 28 L 162 24 L 170 22 L 178 24 L 182 30 L 178 36 L 170 40 L 162 42 L 155 40 L 151 34 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Scandinavia -->
+            <path d="M 162 14 L 168 10 L 174 12 L 176 18 L 172 24 L 166 26 L 160 22 L 158 16 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- UK -->
+            <path d="M 148 26 L 152 22 L 156 24 L 156 30 L 152 32 L 148 30 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Africa -->
+            <path d="M 158 52 L 166 48 L 175 50 L 180 58 L 182 70 L 180 82 L 175 92 L 168 98 L 160 96 L 154 88 L 150 76 L 150 64 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Russia / Asia north -->
+            <path d="M 182 18 L 200 14 L 225 12 L 248 15 L 265 18 L 270 24 L 262 30 L 245 32 L 225 30 L 205 28 L 188 26 L 182 22 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Middle East -->
+            <path d="M 188 48 L 196 44 L 205 46 L 210 54 L 208 62 L 200 66 L 192 64 L 186 56 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- India -->
+            <path d="M 215 48 L 222 44 L 230 46 L 234 55 L 232 65 L 225 72 L 218 68 L 213 58 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- China / SE Asia -->
+            <path d="M 238 28 L 255 25 L 268 28 L 272 36 L 268 44 L 258 48 L 245 48 L 236 44 L 232 36 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- SE Asia peninsula -->
+            <path d="M 258 50 L 265 48 L 270 54 L 268 62 L 262 66 L 256 62 L 254 54 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Japan -->
+            <path d="M 278 28 L 283 25 L 287 28 L 286 34 L 281 36 L 277 32 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- Australia -->
+            <path d="M 265 100 L 278 95 L 292 97 L 300 106 L 298 118 L 288 126 L 275 125 L 265 116 L 262 106 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+            <!-- New Zealand -->
+            <path d="M 308 118 L 312 114 L 316 117 L 315 124 L 311 126 L 307 122 Z" fill="none" stroke="#b8962e" stroke-width="0.8"/>
+
+            <!-- Project location dots -->
+            <!-- Belgrade -->
+            <circle cx="170" cy="34" r="2" fill="#b8962e" opacity="0.9"/>
+            <!-- Dubai / MENA -->
+            <circle cx="200" cy="56" r="2" fill="#b8962e" opacity="0.9"/>
+            <!-- Montenegro -->
+            <circle cx="168" cy="38" r="1.5" fill="#b8962e" opacity="0.8"/>
+            <!-- Athens -->
+            <circle cx="172" cy="44" r="1.5" fill="#b8962e" opacity="0.8"/>
+            <!-- Abu Dhabi -->
+            <circle cx="204" cy="58" r="1.5" fill="#b8962e" opacity="0.8"/>
+            <!-- Asia project -->
+            <circle cx="262" cy="44" r="1.5" fill="#b8962e" opacity="0.7"/>
+            <!-- Western Europe -->
+            <circle cx="155" cy="32" r="1.5" fill="#b8962e" opacity="0.7"/>
+
+            <!-- Latitude lines -->
+            <line x1="20" y1="60" x2="340" y2="60" stroke="#2a2418" stroke-width="0.4"/>
+            <line x1="20" y1="90" x2="340" y2="90" stroke="#2a2418" stroke-width="0.4"/>
+            <line x1="20" y1="120" x2="340" y2="120" stroke="#2a2418" stroke-width="0.4"/>
+            <line x1="20" y1="30" x2="340" y2="30" stroke="#2a2418" stroke-width="0.4"/>
+            <!-- Longitude lines -->
+            <line x1="90" y1="10" x2="90" y2="160" stroke="#2a2418" stroke-width="0.4"/>
+            <line x1="180" y1="10" x2="180" y2="160" stroke="#2a2418" stroke-width="0.4"/>
+            <line x1="270" y1="10" x2="270" y2="160" stroke="#2a2418" stroke-width="0.4"/>
+          </svg>
+          <div style="font-size:8px;letter-spacing:2px;color:#555;font-family:'DM Sans',sans-serif;text-align:center;line-height:1.6;">200+ PROJEKATA<br>EUROPA · MENA · AZIJA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="napomena" style="margin-top:1.5rem;">
+      <strong>O projektu Dobračina Plaza:</strong> Objekat u srcu Beograda na uglu Dobračine i Dunavske ulice, u neposrednoj blizini linijskog parka i Kalemegdana. Tri ulaza, mešovita namena (stanovi + lokali), bogata materijalizacija — bronza, kamen, fasadna keramika. Lokacija klase A sa izuzetnim urbanim kontekstom.
+    </div>
+  </div>
+</div>
+
+<!-- FAZE -->
+<div class="full-section" id="faze">
+  <div class="full-inner">
+    <div class="section-label">PREDLOG REŠENJA</div>
+    <div class="section-title">Tri faze.<br><em>Jedan ekosistem.</em></div>
+    <div class="section-desc">Svaka faza može da se realizuje nezavisno ili u kombinaciji. Fokus je na Touch Screen ekosistemu kao centralnom prodajnom alatu. Target za finalne Revit fajlove: 1. jun 2026.</div>
+
+    <div class="phase-tabs">
+      <button class="phase-tab active" onclick="switchPhase(1)">
+        <div class="tab-num">FAZA 01</div>
+        <div class="tab-name">Touch Screen</div>
+        <div class="tab-price">od €75,000</div>
+      </button>
+      <button class="phase-tab" onclick="switchPhase(2)">
+        <div class="tab-num">FAZA 02</div>
+        <div class="tab-name">3D Sadržaj</div>
+        <div class="tab-price">od €32,000</div>
+      </button>
+      <button class="phase-tab" onclick="switchPhase(3)">
+        <div class="tab-num">FAZA 03</div>
+        <div class="tab-name">Marketing Materijali</div>
+        <div class="tab-price">od €11,000</div>
+      </button>
+    </div>
+
+    <!-- FAZA 1 -->
+    <div class="phase-panel active" id="phase-1">
+      <div class="panel-grid">
+        <div class="panel-cell">
+          <div class="panel-cell-label">ŠTA JE UKLJUČENO</div>
+          <ul class="item-list">
+            <li>Interaktivna 3D mapa gradskog konteksta<span class="item-sub">Linijski park, Kalemegdan, 25. maj, škole, gastro, prodavnice</span></li>
+            <li>Navigacija kroz tri nivoa — grad → objekat → stan<span class="item-sub">Seamless customer journey od konteksta do jedinice</span></li>
+            <li>Tri ulaza / lamele — interaktivna selekcija<span class="item-sub">Klik na ulaz → floor plate → individualni stan</span></li>
+            <li>3D ture stanova i lokala<span class="item-sub">Fotorealistični prikaz po tipu, materijalizacija i svetlo</span></li>
+            <li>Realni pogledi sa svakog balkona / terase<span class="item-sub">Po orijentaciji i spratu, pogled na park i Kalemegdan</span></li>
+            <li>Status i cena jedinice u realnom vremenu<span class="item-sub">CRM integracija — dostupno / rezervisano / prodato</span></li>
+            <li>Email slanje PDF ponude direktno iz aplikacije<span class="item-sub">Branded PDF sa odabranim stanovima, odmah na licu mesta</span></li>
+            <li>Dnevni i noćni režim + animirani objekti<span class="item-sub">Atmosfera, materijalizacija i svetlo kao prodajni argument</span></li>
+            <li>Touch screen hardware<span class="item-sub">Kompjuter + ekran — uključeno u cenu</span></li>
+          </ul>
+        </div>
+        <div class="panel-cell">
+          <div class="panel-cell-label">CUSTOMER JOURNEY</div>
+          <ul class="item-list">
+            <li>Korak 1 — Gradski kontekst<span class="item-sub">Interaktivna mapa lokacije: parkovi, škole, gastro, infrastruktura</span></li>
+            <li>Korak 2 — Objekat<span class="item-sub">3D prikaz sa sva tri ulaza, fasada, okolina, atmosfera</span></li>
+            <li>Korak 3 — Sprat i pozicija<span class="item-sub">Floor plate po spratu, pozicija stana u objektu</span></li>
+            <li>Korak 4 — Stan / Lokal<span class="item-sub">3D tura interijera, osnova, površine, cena</span></li>
+            <li>Korak 5 — Poređenje i selekcija<span class="item-sub">Favoriti, poređenje više jedinica side-by-side</span></li>
+            <li>Korak 6 — Ponuda<span class="item-sub">Email PDF ponuda generisana jednim klikom</span></li>
+          </ul>
+          <div class="panel-cell-label" style="margin-top:1.5rem;">ŠTA KLIJENT DOSTAVLJA</div>
+          <ul class="item-list">
+            <li>Finalni Revit fajlovi<span class="item-sub">Target: 1. jun 2026</span></li>
+            <li>Brand guidelines projekta<span class="item-sub">Logo, boje, fontovi, moodboard</span></li>
+            <li>Lista lokala i stanova sa cenama<span class="item-sub">Excel / CSV format</span></li>
+            <li>Specifikacije materijalizacije po tipu<span class="item-sub">Opcija 4A-4E — bronza, kamen, fasadna keramika</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel-cell-label">HARDVER I PLATFORME</div>
+      <div class="panel-grid" style="margin-bottom:1.5rem;">
+        <div class="panel-cell">
+          <div class="panel-cell-label">TOUCH SCREEN — SALES CENTAR</div>
+          <ul class="item-list">
+            <li>Instaliran softver na namenskom računaru<span class="item-sub">Windows PC — high-end GPU za Unreal Engine</span></li>
+            <li>Edge-to-edge touch screen ekran<span class="item-sub">Prilagođen prostoru sales centra</span></li>
+            <li>Offline rad — ne zahteva internet konekciju<span class="item-sub">Sav sadržaj je lokalan na mašini</span></li>
+          </ul>
+        </div>
+        <div class="panel-cell">
+          <div class="panel-cell-label">WEB + TABLET (Faza 02)</div>
+          <ul class="item-list">
+            <li>Web aplikacija — radi na bilo kom browseru<span class="item-sub">Desktop, laptop, tablet, telefon</span></li>
+            <li>iPad / Android tablet optimizovano<span class="item-sub">Za rad sa klijentima na terenu ili van sales centra</span></li>
+            <li>Cloud hosted — uvek ažurno<span class="item-sub">Promena statusa stana → trenutno vidljivo svuda</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel-cell-label">TIMELINE REALIZACIJE</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-badge">JUN 2026</div><div class="tl-content">Prijem finalnih Revit fajlova, kick-off, brand setup<span>Definisanje scope-a, potpisivanje ugovora, onboarding</span></div></div>
+        <div class="tl-item"><div class="tl-badge">JUN–JUL 2026</div><div class="tl-content">3D modeliranje, gradski kontekst, fotogrametrija okoline<span>Linijski park, Kalemegdan, susedni objekti</span></div></div>
+        <div class="tl-item"><div class="tl-badge">JUL–SEP 2026</div><div class="tl-content">Unreal Engine produkcija — tri ulaza, interijeri, materijalizacija<span>Milestone review sa klijentom</span></div></div>
+        <div class="tl-item"><div class="tl-badge">SEP–OKT 2026</div><div class="tl-content">CRM integracija, email ponuda, customer journey integracija<span>Testiranje, obuka prodajnog tima, isporuka</span></div></div>
+      </div>
+
+      <div class="price-box">
+        <div class="price-box-header">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:var(--light);margin-bottom:8px;">FAZA 01 · TOUCH SCREEN</div>
+            <div class="price-main">od €75,000</div>
+            <div class="price-note">Lifetime licenca · Hardware uključen · 1 godina podrške · 10 uređaja</div>
+          </div>
+          <div style="font-size:11px;color:var(--light);text-align:right;line-height:2;">Single Property<br>Unreal Engine<br>Authorized Partner</div>
+        </div>
+        <div class="price-row"><span class="price-row-lbl">Base Touch Screen Single Property licenca</span><span class="price-row-val">od €52,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Gradski kontekst — interaktivna mapa okoline</span><span class="price-row-val">€6,000 – €9,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">3 ulaza / lamele — posebni floor plate sistemi</span><span class="price-row-val">€4,500 – €7,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">CRM integracija (status + cena u realnom vremenu)</span><span class="price-row-val">€3,000 – €5,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Email PDF ponuda iz aplikacije</span><span class="price-row-val">€2,500 – €4,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Poređenje favorita (side-by-side)</span><span class="price-row-val">€1,500 – €2,500</span></div>
+        <div class="price-row"><span class="price-row-lbl">Hardware (kompjuter + touch screen)</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Obuka prodajnog tima</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">1 godina tehničke podrške</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Korišćenje na 10 uređaja</span><span class="price-row-val gold">uključeno</span></div>
+      </div>
+
+      <div style="background:var(--surface);border:0.5px solid var(--border);padding:1.5rem 2rem;margin-bottom:1rem;">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--gold);margin-bottom:10px;">FAZA 01B · SOOADA — PROPERTY NAVIGATOR (WEB)</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border);">
+          <div><div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--gold);">€18,690</div><div style="font-size:11px;color:var(--light);margin-top:4px;">Jednokratna naknada · Hosting uključen · Multi-device</div></div>
+          <div style="font-size:11px;color:var(--light);text-align:right;line-height:2;">Web-based<br>Real-time<br>Multi-device</div>
+        </div>
+        <div class="price-row"><span class="price-row-lbl">Sooada Property Navigator licenca</span><span class="price-row-val">€18,690</span></div>
+        <div class="price-row"><span class="price-row-lbl">Masterplan, building, apartment nivoi pregleda</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Globalni filteri i poređenje do 5 jedinica</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Generisanje lidova i sinhronizacija sa CRM-om</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Integracija sa prodajnim web sajtom</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Hosting i maintenance</span><span class="price-row-val gold">uključeno</span></div>
+      </div>
+
+      <div style="background:var(--surface);border:0.5px solid var(--border);padding:1.5rem 2rem;margin-bottom:1rem;">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--gold);margin-bottom:10px;">FAZA 01C · CRM + INVENTAR + PONUDE</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border);">
+          <div><div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--gold);">€22,500 <span style="font-size:16px;">/god</span></div><div style="font-size:11px;color:var(--light);margin-top:4px;">Godišnja pretplata · 5 korisničkih naloga · Auto PDF ponude</div></div>
+          <div style="font-size:11px;color:var(--light);text-align:right;line-height:2;">Real-time<br>5 naloga<br>Auto-PDF</div>
+        </div>
+        <div class="price-row"><span class="price-row-lbl">Inventar po lamelama i zgradama</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Status jedinica u realnom vremenu</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Baza kontakata i kupaca</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Praćenje rata sa notifikacijama</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Upload PDF ugovora i dokumentacije</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Analitika i izveštaji u realnom vremenu</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Auto-generisane branded PDF ponude</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">5 korisničkih naloga sa ulogama</span><span class="price-row-val gold">uključeno</span></div>
+      </div>
+
+      <div class="napomena"><strong>Demo okruženje:</strong> Obezbeđujemo pristup demo projektu u produkciji za testiranje svih funkcionalnosti pre finalnog puštanja u rad. Coming soon projekti mogu se unositi u sistem pre početka prodaje i ostati nevidljivi do aktivacije.</div>
+    </div>
+
+
+    <!-- FAZA 2 -->
+    <div class="phase-panel" id="phase-2">
+      <div class="panel-grid">
+        <div class="panel-cell">
+          <div class="panel-cell-label">3D SADRŽAJ — ŠTA JE UKLJUČENO</div>
+          <ul class="item-list">
+            <li>Eksterijer renders — objekat sa tri ulaza<span class="item-sub">3x eksterijer view, top view, platforma renders — 5000px</span></li>
+            <li>Gradski kontekst i okolina<span class="item-sub">Linijski park, Kalemegdan, 25. maj — fotorealistično</span></li>
+            <li>Interior 360° tura po tipu stana / lokala<span class="item-sub">Visok nivo realizma — materijalizacija, atmosfera, svetlo</span></li>
+            <li>Realni pogledi sa balkona<span class="item-sub">Po orijentaciji (park, grad) i spratu</span></li>
+            <li>Fly-through video — eksterijer<span class="item-sub">Cinematic video, Unreal Engine produkcija</span></li>
+            <li>Fly-through video — enterijer<span class="item-sub">Prolaz kroz tipski stan visokog standarda</span></li>
+            <li>Dnevni i noćni режim<span class="item-sub">Dinamičko osvetljenje, bronzana bravarija, svetla</span></li>
+            <li>Main MasterPlan render<span class="item-sub">Top view kompleksa sa okolicom — jednokratna naknada</span></li>
+          </ul>
+        </div>
+        <div class="panel-cell">
+          <div class="panel-cell-label">PRODUKCIONI PROCESS — INPUTI</div>
+          <ul class="item-list">
+            <li>Finalni Revit fajlovi (1. jun 2026)<span class="item-sub">Svi ulazi, stanovi, lokali — kompletna dokumentacija</span></li>
+            <li>Fasadna specifikacija<span class="item-sub">Opcija 4A-4E: bronza, kamen/kompozit/fasadna keramika</span></li>
+            <li>Interijer moodboard po tipu<span class="item-sub">Reference slike, materijali, nameštaj</span></li>
+            <li>Logo i brand guidelines projekta<span class="item-sub">AI/EPS/SVG format</span></li>
+            <li>Voiceover audio fajlovi<span class="item-sub">Opciono — za fly-through videe</span></li>
+            <li>GIS podaci i granice parcele<span class="item-sub">Za preciznu integraciju okoline</span></li>
+          </ul>
+          <div class="panel-cell-label" style="margin-top:1.5rem;">PRODUKCIONA NAPOMENA</div>
+          <p style="font-size:12px;color:#ccc;line-height:1.7;">Case3D preuzima <strong style="color:var(--gold);">kompletnu izradu 3D sadržaja</strong> — od Revit fajlova do finalnih rendera i Unreal Engine integracije. Klijent isporučuje arhitektonsku dokumentaciju i brand materijale.</p>
+        </div>
+      </div>
+
+      <div class="price-box">
+        <div class="price-box-header">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:var(--light);margin-bottom:8px;">FAZA 02 · 3D SADRŽAJ</div>
+            <div class="price-main">od €32,000</div>
+            <div class="price-note">Jednokratna naknada · Sve u 5000px rezoluciji · Unreal Engine</div>
+          </div>
+          <div style="font-size:11px;color:var(--light);text-align:right;line-height:2;">5000px<br>Unreal Engine<br>Photorealistic</div>
+        </div>
+        <div class="price-row"><span class="price-row-lbl">Main MasterPlan 3D render (top view)</span><span class="price-row-val">€2,200</span></div>
+        <div class="price-row"><span class="price-row-lbl">Building Package — eksterijer renders (5x view)</span><span class="price-row-val">€11,000 – €15,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Gradski kontekst — interaktivna okolina</span><span class="price-row-val">€5,000 – €7,500</span></div>
+        <div class="price-row"><span class="price-row-lbl">Interior 360° Apartment / Local Tour</span><span class="price-row-val">€8,500 – €12,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Pogledi sa balkona (orijentacija × sprat)</span><span class="price-row-val">€3,500 – €6,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">2× fly-through cinematic video</span><span class="price-row-val">€7,000 – €10,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Dan/noć dynamic lighting sistem</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Sve renders u 5000px rezoluciji</span><span class="price-row-val gold">uključeno</span></div>
+      </div>
+    </div>
+
+    <!-- FAZA 3 -->
+    <div class="phase-panel" id="phase-3">
+      <div class="panel-grid">
+        <div class="panel-cell">
+          <div class="panel-cell-label">ŠTA JE UKLJUČENO</div>
+          <ul class="item-list">
+            <li>Stilizovane osnove sa rasporedom nameštaja<span class="item-sub">Prodajni dokumenti, vizualno privlačni — po tipu stana/lokala</span></li>
+            <li>Tabela površina<span class="item-sub">Unutrašnja, terasa, ukupna — po svakom tipu</span></li>
+            <li>Lokator na master planu i situacionom planu<span class="item-sub">Pozicija u okviru kompleksa, blok, ulaz</span></li>
+            <li>Floor plate po spratu sa istaknutim stanom<span class="item-sub">Svi spratovi, susedne jedinice, zajednički prostori</span></li>
+            <li>Brendirano zaglavlje i VI integracija<span class="item-sub">Logo projekta, boje, tipografija — print-ready 300 DPI</span></li>
+            <li>Indikator skale i orijentacije<span class="item-sub">North arrow, scale bar — konzistentno kroz sve dokumente</span></li>
+            <li>Disclaimer tekst<span class="item-sub">Pravna napomena o okvirnim površinama i uslovima prodaje</span></li>
+            <li>Automatsko PDF generisanje iz platforme<span class="item-sub">Integracija sa Fazom 2 — ponuda jednim klikom</span></li>
+          </ul>
+        </div>
+        <div class="panel-cell">
+          <div class="panel-cell-label">AUTOMATIZACIJA</div>
+          <p style="font-size:13px;color:#ccc;line-height:1.8;margin-bottom:1.5rem;">Integracija sa web platformom (Faza 2) omogućava <strong style="color:var(--gold);">automatsko generisanje</strong> branded PDF ponude za svaku jedinicu jednim klikom agenta. Nema ručnog rada — sistem povlači sve podatke automatski.</p>
+          <div class="panel-cell-label">ŠTA KLIJENT DOSTAVLJA</div>
+          <ul class="item-list">
+            <li>Arhitektonske osnove svih tipova<span class="item-sub">DWG format sa tačnim površinama</span></li>
+            <li>Floor plate svih spratova<span class="item-sub">DWG format</span></li>
+            <li>Logo projekta u vektorskom formatu<span class="item-sub">AI / EPS / SVG</span></li>
+            <li>Brand guidelines (boje, fontovi)<span class="item-sub">Ili sloboda da Case3D predloži</span></li>
+            <li>Finalni disclaimer tekst<span class="item-sub">Pravnik klijenta definiše sadržaj</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="price-box">
+        <div class="price-box-header">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:var(--light);margin-bottom:8px;">FAZA 03 · MARKETING MATERIJALI</div>
+            <div class="price-main">od €11,000</div>
+            <div class="price-note">Jednokratna naknada · Svi tipovi · Branded PDF dokumenti</div>
+          </div>
+          <div style="font-size:11px;color:var(--light);text-align:right;line-height:2;">Graphic Design<br>Print-ready<br>Auto-generated</div>
+        </div>
+        <div class="price-row"><span class="price-row-lbl">Graphic Design base paket</span><span class="price-row-val">€3,200</span></div>
+        <div class="price-row"><span class="price-row-lbl">Stilizovane osnove sa nameštajem — svi tipovi</span><span class="price-row-val">€4,500 – €7,000</span></div>
+        <div class="price-row"><span class="price-row-lbl">Floor plate grafika (svi spratovi)</span><span class="price-row-val">€1,800 – €3,200</span></div>
+        <div class="price-row"><span class="price-row-lbl">Master plan i situacioni plan lokatori</span><span class="price-row-val">€1,300 – €2,200</span></div>
+        <div class="price-row"><span class="price-row-lbl">Brendirano zaglavlje i VI integracija</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Disclaimer, skala, orijentacija</span><span class="price-row-val gold">uključeno</span></div>
+        <div class="price-row"><span class="price-row-lbl">Integracija u platformu (auto PDF)</span><span class="price-row-val gold">uključeno</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PRICING MODEL -->
+<div class="full-section" id="pricing-model">
+  <div class="full-inner">
+    <div class="section-label">BUDŽETIRANJE BUDUĆIH PROJEKATA</div>
+    <div class="section-title">Jasni pricing<br><em>model.</em></div>
+    <div class="section-desc">Cenovnik za sve buduće projekte iz portfolija — od pripreme novog projekta do custom funkcionalnosti.</div>
+
+    <div class="panel-cell-label" style="margin-bottom:1rem;">NOVI PROJEKAT — JEDNOKRATNI TROŠKOVI</div>
+    <table class="pricing-model">
+      <thead><tr><th>STAVKA</th><th>OPIS</th><th style="text-align:right;">CENA</th></tr></thead>
+      <tbody>
+        <tr><td class="cat">Setup projekta</td><td class="name">Prilagođavanje iz rendera koje dostavljate — kreiranje novog projekta u sistemu, import jedinica, metapodaci<span style="display:block;font-size:11px;color:#aaa;margin-top:3px;">Uključuje: upload osnova, atributi, cene</span></td><td class="price-col">€2,200 – €4,000</td></tr>
+        <tr><td class="cat">Tema projekta</td><td class="name">Priprema styling-a (tema) za novi projekat — boje, fontovi, logo integracija, UI prilagođavanje<span style="display:block;font-size:11px;color:#aaa;margin-top:3px;">Zajednički elementi između faza ostaju isti</span></td><td class="price-col">€1,300 – €2,200</td></tr>
+        <tr><td class="cat">Okolina</td><td class="name">Priprema interaktivne mape tog dela grada — škole, vrtići, parkovi, gastro, javne ustanove, poznata mesta<span style="display:block;font-size:11px;color:#aaa;margin-top:3px;">Jednom urađeno, koristi se za sve faze projekta</span></td><td class="price-col">€3,500 – €7,000</td></tr>
+        <tr><td class="cat">Proširenje faza</td><td class="name">Dodavanje nove zgrade/faze (npr. BIG faza 2, 3) — isti širi kontekst i tema, nova zgrada sa stanovima<span style="display:block;font-size:11px;color:#aaa;margin-top:3px;">Značajno jeftiniji od prvog projekta</span></td><td class="price-col">50–70% cene prve faze</td></tr>
+        <tr><td class="cat">Stan / Lokal</td><td class="name">Obeležavanje pojedinačne jedinice, upload floorplan, metapodaci, cena<span style="display:block;font-size:11px;color:#aaa;margin-top:3px;">Paketni popust za veći broj jedinica</span></td><td class="price-col">€35 – €70 / jedinici</td></tr>
+      </tbody>
+    </table>
+
+    <div class="panel-cell-label" style="margin-bottom:1rem;">CUSTOM FUNKCIONALNOSTI — OKVIRNI OKVIR</div>
+    <table class="pricing-model">
+      <thead><tr><th>FUNKCIONALNOST</th><th>OPIS</th><th style="text-align:right;">OKVIRNA CENA</th></tr></thead>
+      <tbody>
+        <tr><td class="cat">AI Video</td><td class="name">Generisanje AI videa baziranog na 3D modelu — walkthrough, promo video, social media sadržaj</td><td class="price-col">€7,000 – €13,000</td></tr>
+        <tr><td class="cat">Dublja CRM integracija</td><td class="name">Prosleđivanje atributa i rekorda iz platforme u CRM (Salesforce, HubSpot, custom) — bidirektionalna sinhronizacija</td><td class="price-col">€4,500 – €11,000</td></tr>
+        <tr><td class="cat">Custom Reporting</td><td class="name">Dashboard za menadžment — prodajni izveštaji, konverzija, aktivnost agenata, analytics</td><td class="price-col">€3,500 – €7,000</td></tr>
+        <tr><td class="cat">Experience Room</td><td class="name">320° zakrivljeni LED ekran — multimedia pozornica za prodajni centar, multiuser iskustvo</td><td class="price-col">od €90,000</td></tr>
+        <tr><td class="cat">Custom funkcionalnost</td><td class="name">Bilo koja specifična funkcionalnost van standardnog seta — procena po scopeu</td><td class="price-col">€60 / sat</td></tr>
+      </tbody>
+    </table>
+
+    <div class="napomena"><strong>Hosting i troškovi:</strong> Touch Screen je lokalno hostovano rešenje — sav sadržaj je na lokalnoj mašini, nema cloud troškova niti godišnjih naknada za bandwidth. Lifetime licenca znači jednokratno plaćanje bez ponavljajućih troškova platforme.</div>
+  </div>
+</div>
+
+<!-- ADMINISTRACIJA -->
+<div class="full-section" id="administracija">
+  <div class="full-inner">
+    <div class="section-label">ADMINISTRACIJA SISTEMA</div>
+    <div class="section-title">Šta možete sami,<br><em>a šta mi radimo.</em></div>
+    <div class="section-desc">Jasna podela između onoga što vaš tim može da administrira samostalno i onoga što zahteva naše servise.</div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th style="width:45%;">FUNKCIONALNOST</th>
+          <th style="width:18%;text-align:center;">VI SAMI</th>
+          <th style="width:18%;text-align:center;">CASE3D</th>
+          <th style="width:19%;text-align:center;">OBOJE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="feature">Promena cene stana / lokala</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Promena statusa (dostupno/rezervisano/prodato)</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Dodavanje novog korisnika / agenta</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Upload floorplan za novi stan</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Ažuriranje metapodataka (površina, opis)</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Email ponuda — slanje klijentu</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">CRM pregled i upravljanje leadsima</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Generisanje izveštaja i analitika</td><td class="self">✓</td><td></td><td></td></tr>
+        <tr><td class="feature">Aktivacija / deaktivacija projekta</td><td></td><td></td><td class="both">✓</td></tr>
+        <tr><td class="feature">Dodavanje novog projekta / faze</td><td></td><td></td><td class="both">✓</td></tr>
+        <tr><td class="feature">Izmena branding-a i teme projekta</td><td></td><td class="case3d">✓</td><td></td></tr>
+        <tr><td class="feature">3D sadržaj — novi renders, izmena modela</td><td></td><td class="case3d">✓</td><td></td></tr>
+        <tr><td class="feature">Funkcionalne izmene aplikacije</td><td></td><td class="case3d">✓</td><td></td></tr>
+        <tr><td class="feature">CRM API integracija i konfiguracija</td><td></td><td class="case3d">✓</td><td></td></tr>
+        <tr><td class="feature">Infrastruktura, hosting, deployment</td><td></td><td class="case3d">✓</td><td></td></tr>
+        <tr><td class="feature">Touch Screen hardware setup i konfiguracija</td><td></td><td class="case3d">✓</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <div class="napomena"><strong>Princip:</strong> Sve što se tiče podataka i sadržaja projekta (cene, statusi, korisnici, leadovi, dokumenta) — upravljate vi sami kroz admin panel. Sve što se tiče tehničke infrastrukture, 3D sadržaja i funkcionalnih izmena — to su naši servisi.</div>
+  </div>
+</div>
+
+<!-- SLA -->
+<div class="full-section" id="sla">
+  <div class="full-inner">
+    <div class="section-label">SERVICE LEVEL AGREEMENT</div>
+    <div class="section-title">Naša <em>garancija</em><br>kvaliteta usluge.</div>
+    <div class="section-desc">Jasno definisani rokovi odgovora i rešavanja, dostupnost sistema i uslovi podrške.</div>
+
+    <div class="sla-grid">
+      <div class="sla-cell">
+        <div class="sla-val">99.5%</div>
+        <div class="sla-lbl">UPTIME GARANCIJA</div>
+        <div class="sla-desc">Touch Screen aplikacija garantovano funkcionalna 99.5% vremena. Planirani maintenance uvek unapred najavljen.</div>
+      </div>
+      <div class="sla-cell">
+        <div class="sla-val">&lt; 4h</div>
+        <div class="sla-lbl">VREME ODGOVORA — KRITIČNO</div>
+        <div class="sla-desc">Za kritične probleme koji blokiraju prodajni proces — odgovor i inicijalna dijagnoza za manje od 4 radna sata.</div>
+      </div>
+      <div class="sla-cell">
+        <div class="sla-val">1 dan</div>
+        <div class="sla-lbl">VREME ODGOVORA — STANDARDNO</div>
+        <div class="sla-desc">Za standardne upite i probleme — odgovor isti radni dan. Mon–Pet 9–16h CET. Vreme rešavanja zavisi od složenosti.</div>
+      </div>
+      <div class="sla-cell">
+        <div class="sla-val">1 god</div>
+        <div class="sla-lbl">UKLJUČENA PODRŠKA</div>
+        <div class="sla-desc">Godina tehničke podrške, bugfixevi i security update-i uključeni u cenu. Bez dodatnih troškova za standardno održavanje.</div>
+      </div>
+      <div class="sla-cell">
+        <div class="sla-val">€60</div>
+        <div class="sla-lbl">SATNICA DODATNIH USLUGA</div>
+        <div class="sla-desc">Funkcionalne izmene, custom razvoj i podrška van godišnje licence naplaćuju se po satnici od €60/sat.</div>
+      </div>
+      <div class="sla-cell">
+        <div class="sla-val">Demo</div>
+        <div class="sla-lbl">TEST OKRUŽENJE</div>
+        <div class="sla-desc">Obezbeđujemo demo projekat u produkciji za testiranje svih funkcionalnosti pre go-live. Pristup je dostupan tokom razvoja.</div>
+      </div>
+    </div>
+
+    <div class="panel-cell-label" style="margin-bottom:1rem;">ŠTA JE UKLJUČENO U SLA</div>
+    <div class="panel-grid">
+      <div class="panel-cell">
+        <div class="panel-cell-label">UKLJUČENO U TOUCH SCREEN LICENCU</div>
+        <ul class="item-list">
+          <li>Bugfixevi i ispravke grešaka<span class="item-sub">Bez ograničenja — sve što nije u scopeu klijenta</span></li>
+          <li>Security update-i i zakrpe<span class="item-sub">Automatski, bez potrebe za akcionim planom</span></li>
+          <li>Hosting i infrastruktura<span class="item-sub">AWS / cloud, backup, monitoring</span></li>
+          <li>Podrška za onboarding novih korisnika<span class="item-sub">Do 2 puta godišnje bez naknade</span></li>
+          <li>Monitoring i proaktivno javljanje o problemima<span class="item-sub">Mi vas obaveštavamo pre nego što vi primetite</span></li>
+        </ul>
+      </div>
+      <div class="panel-cell">
+        <div class="panel-cell-label">NIJE UKLJUČENO — NAPLAĆUJE SE PO SATNICI</div>
+        <ul class="item-list">
+          <li>Nove funkcionalnosti van originalnog scopea<span class="item-sub">Svaka nova feature se planira i procenjuje posebno</span></li>
+          <li>Izmene 3D sadržaja i rendera<span class="item-sub">Novi tipovi stanova, izmena materijalizacije</span></li>
+          <li>Dublja CRM integracija<span class="item-sub">Prosleđivanje rekorda, custom polja</span></li>
+          <li>Custom reporting i dashboard<span class="item-sub">Menadžment analitika van standardnih izveštaja</span></li>
+          <li>Onsite podrška i obuka<span class="item-sub">Putni troškovi i dnevnica se naplaćuju posebno</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ODGOVORI NA PITANJA -->
+<div class="full-section" id="pitanja">
+  <div class="full-inner">
+    <div class="section-label">ODGOVORI NA PITANJA</div>
+    <div class="section-title">Transparentnost<br><em>kao standard.</em></div>
+    <div class="section-desc">Odgovori na pitanja koja najčešće postavljaju naši klijenti.</div>
+
+    <div class="objections-grid">
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Šta se dešava kada projekat završi prodaju? <span class="arrow">+</span></div>
+        <div class="obj-a">Projekat ostaje u sistemu u arhiviranom statusu — uvek dostupan za pregled, bez mogućnosti izmene. Pristup je garantovan bez vremenskog ograničenja. Godišnja licenca se ne mora obnavljati za završene projekte koji ne zahtevaju aktivan CRM i real-time update.<div class="obj-highlight">Arhivirani projekti ostaju dostupni zauvek</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Kako funkcioniše proširenje — BIG faza 1, 2, 3? <span class="arrow">+</span></div>
+        <div class="obj-a">Svaka nova faza (zgrada) se dodaje kao novi projekat u sistemu — isti širi kontekst, tema i okolina ostaju neizmenjeni. Cena nove faze je 50–70% cene prvog projekta jer se sav zajednički sadržaj ne radi iznova. Naš sistem je projektovan upravo za ovakve scenarije.<div class="obj-highlight">Nova faza = 50–70% cene prvog projekta</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Možemo li coming soon projekat uneti pre prodaje? <span class="arrow">+</span></div>
+        <div class="obj-a">Da — projekat se može pripremiti i uneti u sistem u coming soon modu. Nije vidljiv klijentima niti agentima van admin naloga dok se eksplicitno ne aktivira. Idealno za pripremu novog projekta dok je prethodni još u prodaji.<div class="obj-highlight">Coming soon mod — unosimo pre prodaje, aktiviramo kada ste spremni</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Koji je rok od finalnih Revit fajlova do isporuke? <span class="arrow">+</span></div>
+        <div class="obj-a">Za Dobračina Plaza, uz finalne Revit fajlove 1. juna 2026, realan rok za kompletnu isporuku Touch Screen ekosistema je oktobar 2026 — 4 meseca. Marketing materijali (Faza 3) mogu biti gotovi za 5 nedelja od kick-off-a.<div class="obj-highlight">Touch Screen: oktobar 2026 · 3D sadržaj teče paralelno</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Kako funkcioniše CRM integracija? <span class="arrow">+</span></div>
+        <div class="obj-a">Standardna CRM integracija uključena u platformu: status i cena svake jedinice se ažurira u realnom vremenu. Za dublje integracije (prosleđivanje rekorda, custom polja, bidirektionalna sinhronizacija sa Salesforce, HubSpot ili custom CRM) — ovo je custom razvoj koji se procenjuje zasebno po €4,500–11,000.<div class="obj-highlight">Standardna integracija uključena · Dublja CRM po dogovoru</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Šta ako nam trebaju izmene nakon isporuke? <span class="arrow">+</span></div>
+        <div class="obj-a">Bugfixevi i ispravke grešaka su uključeni bez ograničenja u godišnju licencu. Funkcionalne izmene i novi features se naplaćuju po satnici od €60/sat. Sve funkcionalne izmene se definišu pre starta projekta — posle isporuke su retke jer se sve dogovori unapred.<div class="obj-highlight">Bugfixevi uključeni · Nove funkcionalnosti €60/sat</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Na kojim platformama radi aplikacija? <span class="arrow">+</span></div>
+        <div class="obj-a">Touch Screen radi kao lokalno instaliran softver na Windows PC — offline, bez potrebe za internet konekcijom. Sav 3D sadržaj je na lokalnoj mašini. Hardver (računar + ekran) je uključen u cenu.<div class="obj-highlight">Touch Screen: Windows offline, ne zahteva internet</div></div>
+      </div>
+      <div class="obj-card" onclick="toggleObj(this)">
+        <div class="obj-q">Možemo li sami administrirati sistem? <span class="arrow">+</span></div>
+        <div class="obj-a">Sve što se tiče podataka — cene, statusi, korisnici, leadovi, dokumenta — upravljate sami kroz admin panel. Tehničku infrastrukturu, 3D sadržaj i funkcionalne izmene radimo mi. Obuka tima je uključena u cenu — sistem je dizajniran za prodajne agente, ne IT tim.<div class="obj-highlight">Podaci: vi sami · Tehnika i 3D: mi radimo</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REKAPITULACIJA -->
+<div class="full-section" id="rekapitulacija">
+  <div class="full-inner">
+    <div class="section-label">FINANSIJSKI PREGLED</div>
+    <div class="section-title"><em>Kompletna</em><br>investicija.</div>
+
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>FAZA</th>
+          <th>USLUGA</th>
+          <th>TIP</th>
+          <th style="text-align:right;">CENA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="faza">01</span></td>
+          <td style="font-size:13px;color:var(--white);">Touch Screen — Interaktivna mapa projekta<br><span style="font-size:11px;color:#aaa;">Unreal Engine · Single Property · Lifetime licenca · Hardware uključen · 3 ulaza · CRM + email ponuda</span></td>
+          <td style="font-size:11px;color:#aaa;">Jednokratno</td>
+          <td style="text-align:right;font-size:13px;font-weight:500;color:var(--white);">od €75,000</td>
+        </tr>
+        <tr>
+          <td><span class="faza">02</span></td>
+          <td style="font-size:13px;color:var(--white);">3D Sadržaj — Renders, 360° ture, fly-through videi<br><span style="font-size:11px;color:#aaa;">Unreal Engine · Gradski kontekst · Materijalizacija · 5000px</span></td>
+          <td style="font-size:11px;color:#aaa;">Jednokratno</td>
+          <td style="text-align:right;font-size:13px;font-weight:500;color:var(--white);">od €32,000</td>
+        </tr>
+        <tr>
+          <td><span class="faza">04</span></td>
+          <td style="font-size:13px;color:var(--white);">Marketing Materijali — Branded Floor Plan Paket<br><span style="font-size:11px;color:#aaa;">Svi tipovi · Branded PDF · Print-ready · Auto-generisanje</span></td>
+          <td style="font-size:11px;color:#aaa;">Jednokratno</td>
+          <td style="text-align:right;font-size:13px;font-weight:500;color:var(--white);">od €11,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background:var(--surface);border:0.5px solid var(--border);padding:1.5rem 2rem;margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border-light);font-size:13px;"><span style="color:var(--light);">Faza 01 — Touch Screen (lifetime licenca)</span><span style="color:var(--white);font-weight:500;">od €75,000</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border-light);font-size:13px;"><span style="color:var(--light);">Faza 01 — Sooada Property Navigator (jednokratno)</span><span style="color:var(--white);font-weight:500;">€18,690</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border-light);font-size:13px;"><span style="color:var(--light);">Faza 02 — 3D Sadržaj (jednokratno)</span><span style="color:var(--white);font-weight:500;">od €32,000</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border-light);font-size:13px;"><span style="color:var(--light);">Faza 03 — Marketing materijali (jednokratno)</span><span style="color:var(--white);font-weight:500;">od €11,000</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--light);">CRM + Inventar + Ponude (godišnje)</span><span style="color:var(--gold);font-weight:500;">€22,500 / god</span></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0 0 0;"><span style="font-size:11px;letter-spacing:2px;color:var(--light);">UKUPNO JEDNOKRATNO (faze 01+02+03)</span><span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gold);">od €136,690</span></div>
+    </div>
+    <div class="grand-total">
+      <div>
+        <div class="gt-lbl">UKUPNA INVESTICIJA — SVE FAZE</div>
+        <div style="font-size:12px;color:#aaa;margin-top:6px;">Jednokratno + prva godina CRM · Bez PDV-a · EUR</div>
+      </div>
+      <div>
+        <div class="gt-val">od €159,190</div>
+        <div class="gt-sub">+ €22,500 godišnje za CRM od 2. godine</div>
+      </div>
+    </div>
+
+    <div class="napomena" style="margin-bottom:1rem;">
+      <strong>Šta je uključeno:</strong> Touch Screen — lifetime licenca, hardware (kompjuter + ekran), korišćenje na 10 uređaja, obuka tima, 1 godina tehničke podrške. Sooada platforma — jednokratna naknada, hosting uključen. CRM — godišnja pretplata sa 5 korisničkih naloga. Sve cene bez PDV-a.
+    </div>
+    <div class="napomena">
+      <strong>Osiguranje:</strong> Naše fakture su osigurane kod Agencije za osiguranje i finansiranje izvoza (AOFI) — <span style="color:var(--gold);">www.aofi.rs</span>
+    </div>
+  </div>
+</div>
+
+<!-- KONTAKT -->
+<div class="full-section" id="kontakt">
+  <div class="full-inner">
+    <div class="section-label">SLEDEĆI KORAK</div>
+    <div class="section-title">Zakažite<br><em>demo poziv.</em></div>
+    <div class="section-desc">Rezervišite termin za demo u kome ćemo prikazati Touch Screen u akciji, provesti vas kroz platformu i odgovoriti na sva pitanja. Demo traje 45–60 minuta.</div>
+
+    <div class="contact-grid">
+      <div class="contact-cell"><div class="contact-lbl">WEB</div><div class="contact-val"><a href="https://www.case-3d.com" target="_blank">www.case-3d.com</a></div></div>
+      <div class="contact-cell"><div class="contact-lbl">EMAIL</div><div class="contact-val"><a href="/cdn-cgi/l/email-protection#3e5a1053575d575d7e5d5f4d5b130d5a105d5153"><span class="__cf_email__" data-cfemail="1672387b7f757f7556757765733b25723875797b">[email&#160;protected]</span></a></div></div>
+      <div class="contact-cell"><div class="contact-lbl">TELEFON</div><div class="contact-val">+381 60 666 6028</div></div>
+      <div class="contact-cell"><div class="contact-lbl">SEDIŠTE</div><div class="contact-val">Novi Sad, Srbija</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- USLOVI PLACANJA -->
+<div class="full-section" id="uslovi">
+  <div class="full-inner">
+    <div class="section-label">USLOVI PLAĆANJA</div>
+    <div class="section-title">Transparentni<br><em>uslovi plaćanja.</em></div>
+    <div class="section-desc">Plaćanje se vrši po prekretnicama isporuke — bez iznenađenja, bez skrivenih troškova.</div>
+
+    <div class="panel-grid" style="margin-bottom:2rem;">
+      <div class="panel-cell">
+        <div class="panel-cell-label">RASPORED PLAĆANJA</div>
+        <div class="tl-item"><div class="tl-badge">30%</div><div class="tl-content">Depozit<span>Potpisivanje ugovora — pokretanje projekta</span></div></div>
+        <div class="tl-item"><div class="tl-badge">30%</div><div class="tl-content">Prekretnica 1<span>Pregled i odobrenje u sredini Faze 1</span></div></div>
+        <div class="tl-item"><div class="tl-badge">30%</div><div class="tl-content">Prekretnica 2<span>Isporuka Faze 2/3 i potvrda klijenta</span></div></div>
+        <div class="tl-item"><div class="tl-badge">10%</div><div class="tl-content">Završno plaćanje<span>Puštanje u rad i predaja</span></div></div>
+      </div>
+      <div class="panel-cell">
+        <div class="panel-cell-label">NAPOMENE</div>
+        <ul class="item-list">
+          <li>Sve cene su u EUR bez PDV-a<span class="item-sub">Konačni iznosi se potvrđuju nakon uvodnog sastanka</span></li>
+          <li>Ponuda važi 14 dana od datuma izdavanja<span class="item-sub">Cene podložne promeni po isteku roka</span></li>
+          <li>CRM se naplaćuje godišnje od dana aktivacije<span class="item-sub">€22,500 godišnje, obnova se može otkazati</span></li>
+          <li>Kašnjenje u dostavi dokumentacije može produži rokove<span class="item-sub">Case3D nije odgovoran za kašnjenja uzrokovana klijentom</span></li>
+          <li>Fakture osigurane kod AOFI<span class="item-sub"><a href="https://www.aofi.rs/en/" target="_blank" style="color:var(--gold);text-decoration:none;">www.aofi.rs</a> — Agencija za osiguranje i finansiranje izvoza</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel-cell-label" style="margin-bottom:1rem;">TEHNIČKE NAPOMENE</div>
+    <div class="panel-grid">
+      <div class="panel-cell">
+        <ul class="item-list">
+          <li>Aplikacija radi na 10 uređaja<span class="item-sub">Touch Screen + tablet/desktop kombinacija</span></li>
+          <li>Potreban TeamViewer pristup<span class="item-sub">Za udaljenu instalaciju i podršku na klijentovom računaru</span></li>
+          <li>Potrebna internet konekcija kablom<span class="item-sub">Za početno podešavanje i remote pristup</span></li>
+          <li>Aplikacija u punom ekranu — Windows 10<span class="item-sub">Unreal Engine 5.6, desktop izvršna aplikacija</span></li>
+        </ul>
+      </div>
+      <div class="panel-cell">
+        <ul class="item-list">
+          <li>Alati: Unreal Engine, 3ds Max, Revit, Adobe Substance<span class="item-sub">Photoshop, After Effects — kompletni produkcioni stack</span></li>
+          <li>Promene arhitekture tokom projekta = dodatni troškovi<span class="item-sub">Model se pravi na osnovu primljenih fajlova</span></li>
+          <li>Komentari po fazama — jednom po fazi<span class="item-sub">Kontinuirani komentari usporavaju radni tok</span></li>
+          <li>Sadržaj (fotografije, videi) dostavlja klijent<span class="item-sub">Posebna ponuda za produkciju sadržaja po potrebi</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIM -->
+<div class="full-section" id="tim">
+  <div class="full-inner">
+    <div class="section-label">TIM I RUKOVODSTVO</div>
+    <div class="section-title">Ljudi koji stoje<br><em>iza projekta.</em></div>
+
+    <div class="panel-grid" style="margin-bottom:2rem;">
+      <div class="panel-cell">
+        <div class="panel-cell-label">PROJEKTNI LIDER</div>
+        <div style="margin-bottom:1rem;">
+          <div style="font-size:16px;font-weight:500;color:var(--white);margin-bottom:4px;">Nebojša Zaklan</div>
+          <div style="font-size:11px;letter-spacing:1px;color:var(--gold);margin-bottom:12px;">SUOSNIVAČ · CEO</div>
+          <p style="font-size:13px;color:#ccc;line-height:1.8;">Vlasnik i generalni direktor Case3D. Više od 10 godina iskustva u oblasti marketinga i prodaje nekretnina. Diplomirao i magistrirao arhitekturu na FTN, Novi Sad — master teza iz oblasti VR/AR i primene u arhitektonskoj vizualizaciji. Lider R&D projekata.</p>
+        </div>
+      </div>
+      <div class="panel-cell">
+        <div class="panel-cell-label">TEHNIČKI LIDER</div>
+        <div>
+          <div style="font-size:16px;font-weight:500;color:var(--white);margin-bottom:4px;">Nemanja Jaćimovski</div>
+          <div style="font-size:11px;letter-spacing:1px;color:var(--gold);margin-bottom:12px;">TEHNIČKI DIREKTOR</div>
+          <p style="font-size:13px;color:#ccc;line-height:1.8;">Tehnički lider interaktivnog tima, sa više od 6 godina iskustva. Blisko sarađuje sa programerima i umetničkim timom na razvoju novih proizvoda. Ekspert za optimizaciju radnih tokova, razvoj alata i skripti, te edukaciju tima o novim softverima.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:0.5px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;gap:2rem;">
+      <div style="flex-shrink:0;">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(184,150,46,0.15);border:0.5px solid var(--gold);display:flex;align-items:center;justify-content:center;">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><text x="50%" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="700" fill="#b8962e">UE</text></svg>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:4px;">Ovlašćeni servisni partner Unreal Engine 2026</div>
+        <div style="font-size:12px;color:var(--light);line-height:1.6;">Case3D je jedini Ovlašćeni servisni partner Unreal Engine u regionu — isporučujući sertifikovana, najsavremenija 3D iskustva u realnom vremenu za nekretnine.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POTPIS -->
+<div class="full-section" id="potpis">
+  <div class="full-inner">
+    <div class="section-label">PRIHVATANJE I POTPIS</div>
+    <div class="section-title">Pokrenimo<br><em>projekat.</em></div>
+    <div class="section-desc">Potpisivanjem ispod, klijent potvrđuje prihvatanje ove ponude i ovlašćuje Case3D da nastavi sa dogovorenim obimom radova.</div>
+
+    <div class="panel-grid" style="margin-bottom:2rem;">
+      <div class="panel-cell">
+        <div class="panel-cell-label">ZA CASE3D</div>
+        <div style="margin-bottom:2rem;">
+          <div style="font-size:14px;font-weight:500;color:var(--white);margin-bottom:4px;">Nebojša Zaklan</div>
+          <div style="font-size:11px;color:var(--light);margin-bottom:2rem;">CEO · Case3D</div>
+          <div style="border-bottom:0.5px solid var(--border-light);margin-bottom:8px;height:40px;"></div>
+          <div style="font-size:11px;color:var(--light);">Potpis · Datum</div>
+        </div>
+      </div>
+      <div class="panel-cell">
+        <div class="panel-cell-label">ZA KLIJENTA</div>
+        <div style="margin-bottom:2rem;">
+          <div style="font-size:14px;font-weight:500;color:var(--white);margin-bottom:4px;">Ime i Titula</div>
+          <div style="font-size:11px;color:var(--light);margin-bottom:2rem;">Kompanija · Pozicija</div>
+          <div style="border-bottom:0.5px solid var(--border-light);margin-bottom:8px;height:40px;"></div>
+          <div style="font-size:11px;color:var(--light);">Potpis · Datum</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="napomena">
+      <strong>Uslovi i odredbe:</strong> Ova ponuda je za produkciju interaktivnih rešenja za zaključene dizajne koji nisu podložni promenama. Manja prilagođavanja su očekivana — Case3D će biti fleksibilan. Značajne promene nakon početka projekta mogu rezultirati dodatnim troškovima i kašnjenjem rokova. Sve cene su u EUR bez PDV-a. Fakture osigurane kod AOFI.
+    </div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  Sve cene su izražene u EUR bez PDV-a i predstavljaju informativnu ponudu. Finalni iznosi se definišu nakon kick-off sastanka i pregleda tehničke dokumentacije. Case3D zadržava pravo izmene cenovnika bez prethodne najave. Ovaj dokument je poverljiv i namenjen isključivo primaocima.<br><br>
+  © 2026 Case3D · www.case-3d.com · Novi Sad, Srbija · Informativna ponuda · Dobračina Plaza
+</div>
+
+</div>
+
+<script>
+var PASS = 'DDP2026';
+var shown = false;
+
+function unlock() {
+  var val = document.getElementById('pw-input').value;
+  var err = document.getElementById('lock-error');
+  if (val === PASS) {
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+  } else {
+    err.textContent = 'Pogrešna šifra. Pokušajte ponovo.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    document.getElementById('pw-input').style.borderColor = '#c0392b';
+    setTimeout(function() { document.getElementById('pw-input').style.borderColor = 'rgba(184,150,46,0.3)'; }, 1500);
+  }
+}
+
+function togglePw() {
+  var inp = document.getElementById('pw-input');
+  var btn = document.getElementById('toggle-btn');
+  shown = !shown;
+  inp.type = shown ? 'text' : 'password';
+  btn.textContent = shown ? 'SAKRIJ' : 'PRIKAŽI';
+}
+
+function switchPhase(n) {
+  var tabs = document.querySelectorAll('.phase-tab');
+  var panels = document.querySelectorAll('.phase-panel');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
+    panels[i].classList.remove('active');
+  }
+  tabs[n-1].classList.add('active');
+  panels[n-1].classList.add('active');
+}
+
+function toggleObj(card) {
+  var isOpen = card.classList.contains('open');
+  var all = document.querySelectorAll('.obj-card');
+  for (var i = 0; i < all.length; i++) {
+    all[i].classList.remove('open');
+  }
+  if (!isOpen) card.classList.add('open');
+}
+</script>
+</body>
+</html>
